@@ -28,7 +28,7 @@ function Freelances() {
                     key={`${profile.name}-${index}`}
                     label={profile.jobTitle}
                     picture={profile.picture}
-                    title={profile.name}
+                    title={42}
                 />
             ))}
         </div>
