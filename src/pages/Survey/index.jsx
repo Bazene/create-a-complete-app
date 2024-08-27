@@ -15,16 +15,36 @@ function Survey() {
   const [surveyData, setSurveyData] = useState({})
 
   // this one allow as to declanch fetch 
+  // useEffect(() => {
+  //   setDataLoading(true)
+  //   fetch(`http://localhost:8000/survey`)
+  //     .then((response) => response.json()
+  //     .then(({ surveyData }) => {
+  //       setSurveyData(surveyData)
+  //       setDataLoading(false)
+  //     })
+  //     .catch((error) => console.log(error))
+  //   )
+  // }, [])
+
   useEffect(() => {
-    setDataLoading(true)
-    fetch(`http://localhost:8000/survey`)
-      .then((response) => response.json()
-      .then(({ surveyData }) => {
+    async function fetchSurvey() {
+      setDataLoading(true)
+      try {
+        const response = await fetch(`http://localhost:8000/survey`)
+        const { surveyData } = await response.json()
         setSurveyData(surveyData)
+      }
+      catch(error) {
+        console.log(error)
+      }
+      finally {
         setDataLoading(false)
-      })
-      .catch((error) => console.log(error))
-    )
+      }
+    }
+
+    fetchSurvey()
+
   }, [])
 
   const QuestionsWrapper = styled.div`
