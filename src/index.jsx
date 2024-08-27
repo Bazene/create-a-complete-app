@@ -9,12 +9,19 @@ import FreelanceForm from './components/FreelanceForm'
 import Error from './components/Error'
 import Results from './pages/Results'
 import Freelances from './pages/Freelances'
+import { createGlobalStyle } from "styled-components";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+const GlobalStyle = createGlobalStyle`
+    div {
+        font-family: 'Trebuchet MS', Helvetica, sans-serif;
+    }
+`
 
 root.render(
   <React.StrictMode>
       <Router>
+        <GlobalStyle />
         <Header />
         
         <Routes>

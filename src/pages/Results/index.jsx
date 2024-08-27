@@ -1,9 +1,9 @@
 function Results() {
     return (
-        <div>
-            Voici le resultat
-        </div>
+      <div>
+        <h1>Résultats</h1>
+      </div>
     )
 }
-
+  
 export default Results
