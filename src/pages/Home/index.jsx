@@ -37,6 +37,10 @@ const Illustration = styled.img`
   flex: 1;
 `
 
+export function sum(a,b) {
+  return a+b
+}
+
 function Home() {
   return (
     <HomeWrapper>

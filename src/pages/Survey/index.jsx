@@ -1,18 +1,57 @@
 import { useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Loader } from '../../utils/style/Atoms'
 import { useContext } from 'react'
 import { SurveyContext } from '../../utils/context'
 import colors from '../../utils/style/colors'
+import { useFetch } from '../../utils/hooks'
+
+const QuestionsWrapper = styled.div`
+display : flex;
+flex-direction : column;
+justify-content : center;
+align-items : center;
+`
+const LinkContainer = styled.div`
+display : flex;
+flex-direction : row;
+justify-content : center;
+`
+
+const QuestionContainer = styled.p`
+margin-bottom : 30px;
+`
+const ReplyBox = styled.button`
+border: none;
+height: 100px;
+width: 300px;
+display: flex;
+align-items: center;
+justify-content: center;
+background-color: ${colors.backgroundLight};
+border-radius: 30px;
+cursor: pointer;
+box-shadow: ${(props) =>
+  props.isSelected ? `0px 0px 0px 2px ${colors.primary} inset` : 'none'};
+&:first-child {
+  margin-right: 15px;
+}
+&:last-of-type {
+  margin-left: 15px;
+}
+`
+
+const ReplyWrapper = styled.div`
+display: flex;
+flex-direction: row;
+`
 
 function Survey() {
   const { questionNumber } = useParams()
   const questionNumberInt = parseInt(questionNumber)
   const prevQuestionNumber = questionNumberInt === 1 ? 1 : questionNumberInt - 1
   const nextQuestionNumber = questionNumberInt + 1
-  const [isDataLoading, setDataLoading] = useState(false)
   const { answers, saveAnswers } = useContext(SurveyContext)
 
   function saveReply(answer) {
@@ -20,89 +59,22 @@ function Survey() {
   }
 
   // the useState allow us to the returned value of API
-  const [surveyData, setSurveyData] = useState({})
+  
+  const { isLoading, data,error } = useFetch(`http://localhost:8000/survey`)
+  const { surveyData } = data
 
-  // this one allow as to declanch fetch 
-  // useEffect(() => {
-  //   setDataLoading(true)
-  //   fetch(`http://localhost:8000/survey`)
-  //     .then((response) => response.json()
-  //     .then(({ surveyData }) => {
-  //       setSurveyData(surveyData)
-  //       setDataLoading(false)
-  //     })
-  //     .catch((error) => console.log(error))
-  //   )
-  // }, [])
-
-  useEffect(() => {
-    async function fetchSurvey() {
-      setDataLoading(true)
-      try {
-        const response = await fetch(`http://localhost:8000/survey`)
-        const { surveyData } = await response.json()
-        setSurveyData(surveyData)
-      }
-      catch(error) {
-        console.log(error)
-      }
-      finally {
-        setDataLoading(false)
-      }
-    }
-
-    fetchSurvey()
-
-  }, [])
-
-  const QuestionsWrapper = styled.div`
-    display : flex;
-    flex-direction : column;
-    justify-content : center;
-    align-items : center;
-  `
-  const LinkContainer = styled.div`
-    display : flex;
-    flex-direction : row;
-    justify-content : center;
-  `
-
-  const QuestionContainer = styled.p`
-    margin-bottom : 30px;
-  `
-  const ReplyBox = styled.button`
-  border: none;
-  height: 100px;
-  width: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${colors.backgroundLight};
-  border-radius: 30px;
-  cursor: pointer;
-  box-shadow: ${(props) =>
-    props.isSelected ? `0px 0px 0px 2px ${colors.primary} inset` : 'none'};
-  &:first-child {
-    margin-right: 15px;
+  if (error) {
+    return <span>Il y a un problème au niveau du serveur</span>
   }
-  &:last-of-type {
-    margin-left: 15px;
-  }
-`
-
-const ReplyWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-`
 
   return (
     <QuestionsWrapper>
       <h2 style={{}}>Question {questionNumber}</h2>
   
-      {isDataLoading ? (
+      {isLoading ? (
         <Loader />
       ) : (
-        <QuestionContainer>{surveyData[questionNumber]}</QuestionContainer>
+        <QuestionContainer>{surveyData && surveyData[questionNumber]}</QuestionContainer>
       )}
 
       <ReplyWrapper>
@@ -123,7 +95,7 @@ const ReplyWrapper = styled.div`
   
       <LinkContainer>
         <Link style={{paddingRight : "10px"}} to={`/survey/${prevQuestionNumber}`}>Précédent</Link>
-        {surveyData[questionNumberInt + 1] ? (
+        {surveyData && surveyData[questionNumberInt + 1] ? (
           <Link to={`/survey/${nextQuestionNumber}`}>Suivant</Link>
         ) : (
           <Link to="/results">Résultats</Link>
